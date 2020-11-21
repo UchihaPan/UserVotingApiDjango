@@ -19,7 +19,7 @@ class PostListView(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
-class PostRetrieveUpdate(generics.RetrieveDestroyAPIView):
+class PostDestroy(generics.RetrieveDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [
@@ -28,14 +28,11 @@ class PostRetrieveUpdate(generics.RetrieveDestroyAPIView):
     ]
 
     def delete(self, request, *args, **kwargs):
-        post = Post.objects.filter(author=self.request.user, pk=kwargs['pk'])
+        post = Post.objects.filter(author=self.request.user, pk=self.kwargs['pk'])
         if post.exists():
             return self.destroy(request, *args, **kwargs)
         else:
             return Response("this post doesnt belong to you", status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 class VoteListView(generics.CreateAPIView, mixins.DestroyModelMixin):
